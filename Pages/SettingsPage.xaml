@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="VehicleServiceCenter.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pageModel="clr-namespace:VehicleServiceCenter.PageModels"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Title="Settings"
+    x:DataType="pageModel:SettingsPageModel">
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <!--  Theme Settings  -->
+            <VerticalStackLayout Spacing="10">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="Large"
+                    Text="Theme Settings" />
+
+                <HorizontalStackLayout Spacing="10">
+                    <Label Text="App Theme" VerticalOptions="Center" />
+                    <Picker SelectedIndexChanged="OnThemeSelectionChanged" SelectedItem="{Binding CurrentTheme}">
+                        <Picker.Items>
+                            <x:String>Light</x:String>
+                            <x:String>Dark</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <!--  Database Settings  -->
+            <VerticalStackLayout Spacing="10">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="Large"
+                    Text="Database Settings" />
+
+                <Entry
+                    x:Name="ServerEntry"
+                    Placeholder="Server name (e.g. localhost\SQLEXPRESS)"
+                    Text="{Binding ServerName}" />
+
+                <Entry
+                    x:Name="DatabaseEntry"
+                    Placeholder="Database name"
+                    Text="{Binding DatabaseName}" />
+
+                <Entry
+                    x:Name="UsernameEntry"
+                    Placeholder="Username (leave empty for Windows auth)"
+                    Text="{Binding Username}" />
+
+                <Entry
+                    x:Name="PasswordEntry"
+                    IsPassword="True"
+                    Placeholder="Password (leave empty for Windows auth)"
+                    Text="{Binding Password}" />
+
+                <Button
+                    Margin="0,10,0,0"
+                    Command="{Binding TestConnectionCommand}"
+                    Text="Test Connection" />
+
+                <Button
+                    Margin="0,10,0,0"
+                    Command="{Binding SaveSettingsCommand}"
+                    Text="Save Settings" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

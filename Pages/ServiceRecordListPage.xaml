@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:VehicleServiceCenter.PageModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+                xmlns:controls="clr-namespace:VehicleServiceCenter.Pages.Controls"
+             x:Class="VehicleServiceCenter.Pages.ServiceRecordListPage"
+             Title="Service Records">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+    
+    <Grid RowDefinitions="*,Auto">
+        <RefreshView Grid.Row="0" 
+                    IsRefreshing="{Binding IsRefreshing}"
+                    Command="{Binding RefreshCommand}">
+            <CollectionView ItemsSource="{Binding Records}"
+                          EmptyView="No service records found">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Text="Delete"
+                                             BackgroundColor="Red"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServiceRecordListPageModel}}, Path=DeleteRecordCommand}"
+                                             CommandParameter="{Binding}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Grid Padding="10" ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                    <Label Text="{Binding ReceiptNumber}" FontAttributes="Bold" />
+                                    <Label Text="{Binding CustomerName}" />
+                                    <Label Text="{Binding VehicleNumber}" />
+                                    <Label Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" 
+                                           TextColor="Gray" FontSize="Small" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" 
+                                       Text="{Binding Total, StringFormat='${0:N2}'}"
+                                       VerticalOptions="Center"
+                                       FontAttributes="Bold" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServiceRecordListPageModel}}, Path=NavigateToRecordCommand}"
+                                        CommandParameter="{Binding}" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <Button Grid.Row="1"
+                Text="New Service Record"
+                Command="{Binding AddRecordCommand}"
+                Margin="10"/>
+
+        <controls:AddButton 
+     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+      Command="{Binding AddRecordCommand}" />
+
+        <ActivityIndicator Grid.RowSpan="2"
+                          IsRunning="{Binding IsBusy}"
+                          IsVisible="{Binding IsBusy}"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center" />
+    </Grid>
+</ContentPage>
