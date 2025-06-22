@@ -1,72 +1,164 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:VehicleServiceCenter.PageModels"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-                xmlns:controls="clr-namespace:VehicleServiceCenter.Pages.Controls"
-             x:Class="VehicleServiceCenter.Pages.ServiceRecordListPage"
-             Title="Service Records">
+<ContentPage
+    x:Class="VehicleServiceCenter.Pages.ServiceRecordListPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:VehicleServiceCenter.Pages.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:VehicleServiceCenter.PageModels"
+    Title="Service Records">
 
     <ContentPage.Behaviors>
-        <toolkit:EventToCommandBehavior
-            EventName="Appearing"
-            Command="{Binding AppearingCommand}" />
+        <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
     </ContentPage.Behaviors>
-    
-    <Grid RowDefinitions="*,Auto">
-        <RefreshView Grid.Row="0" 
-                    IsRefreshing="{Binding IsRefreshing}"
-                    Command="{Binding RefreshCommand}">
-            <CollectionView ItemsSource="{Binding Records}"
-                          EmptyView="No service records found">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems Mode="Execute">
-                                    <SwipeItem Text="Delete"
-                                             BackgroundColor="Red"
-                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServiceRecordListPageModel}}, Path=DeleteRecordCommand}"
-                                             CommandParameter="{Binding}" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
-                            <Grid Padding="10" ColumnDefinitions="*,Auto">
-                                <VerticalStackLayout Grid.Column="0" Spacing="5">
-                                    <Label Text="{Binding ReceiptNumber}" FontAttributes="Bold" />
-                                    <Label Text="{Binding CustomerName}" />
-                                    <Label Text="{Binding VehicleNumber}" />
-                                    <Label Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" 
-                                           TextColor="Gray" FontSize="Small" />
-                                </VerticalStackLayout>
-                                <Label Grid.Column="1" 
-                                       Text="{Binding Total, StringFormat='${0:N2}'}"
-                                       VerticalOptions="Center"
-                                       FontAttributes="Bold" />
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer 
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServiceRecordListPageModel}}, Path=NavigateToRecordCommand}"
-                                        CommandParameter="{Binding}" />
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                x:Key="HeaderStyle"
+                BasedOn="{StaticResource ListItemTextStyle}"
+                TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid Padding="{StaticResource LayoutPadding}" RowDefinitions="Auto,*,Auto">
+        <SearchBar
+            Grid.Row="0"
+            Margin="0,0,0,10"
+            Placeholder="Search by Receipt#, Vehicle#, Mobile# or Date"
+            Text="{Binding SearchQuery}" />
+
+        <RefreshView
+            Grid.Row="1"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}">
+            <Border
+                Padding="10"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <Grid RowDefinitions="Auto,*">
+                    <!--  Header  -->
+                    <Grid Grid.Row="0" ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label
+                            Grid.Column="0"
+                            Style="{StaticResource HeaderStyle}"
+                            Text="Receipt#" />
+                        <Label
+                            Grid.Column="1"
+                            Style="{StaticResource HeaderStyle}"
+                            Text="Customer Name" />
+                        <Label
+                            Grid.Column="2"
+                            Style="{StaticResource HeaderStyle}"
+                            Text="Vehicle#" />
+                        <Label
+                            Grid.Column="3"
+                            Style="{StaticResource HeaderStyle}"
+                            Text="Mobile#" />
+                        <Label
+                            Grid.Column="4"
+                            Style="{StaticResource HeaderStyle}"
+                            Text="Date" />
+                        <Label
+                            Grid.Column="5"
+                            Style="{StaticResource HeaderStyle}"
+                            Text="Total" />
+                    </Grid>
+
+                    <!--  Data Grid  -->
+                    <CollectionView
+                        Grid.Row="1"
+                        Margin="0,10,0,0"
+                        EmptyView="No service records found"
+                        ItemsSource="{Binding FilteredRecords}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <SwipeView>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems Mode="Execute">
+                                            <SwipeItem
+                                                BackgroundColor="Red"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServiceRecordListPageModel}}, Path=DeleteRecordCommand}"
+                                                CommandParameter="{Binding}"
+                                                Text="Delete" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+
+                                    <Grid
+                                        Padding="0,8"
+                                        BackgroundColor="Transparent"
+                                        ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="150" />
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label
+                                            Grid.Column="0"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="{Binding ReceiptNumber}" />
+                                        <Label
+                                            Grid.Column="1"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="{Binding CustomerName}" />
+                                        <Label
+                                            Grid.Column="2"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="{Binding VehicleNumber}" />
+                                        <Label
+                                            Grid.Column="3"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="{Binding MobileNumber}" />                                          
+                                        <Label
+                                            Grid.Column="4"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="{Binding ReceiptDate, StringFormat='{0:dd/MM/yyyy}'}" />
+                                        <Label
+                                            Grid.Column="5"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="{Binding Total, StringFormat='Rs {0:N2}'}" />
+
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServiceRecordListPageModel}}, Path=NavigateToRecordCommand}" CommandParameter="{Binding}" />
+                                        </Grid.GestureRecognizers>
+                                    </Grid>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Border>
         </RefreshView>
 
-        <Button Grid.Row="1"
-                Text="New Service Record"
-                Command="{Binding AddRecordCommand}"
-                Margin="10"/>
+        <Button
+            Grid.Row="2"
+            Margin="0,10,0,0"
+            Command="{Binding AddRecordCommand}"
+            Text="New Service Record" />
+        <controls:AddButton
+            Command="{Binding AddRecordCommand}"
+            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+            Text="Add Service Record" />
 
-        <controls:AddButton 
-     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-      Command="{Binding AddRecordCommand}" />
-
-        <ActivityIndicator Grid.RowSpan="2"
-                          IsRunning="{Binding IsBusy}"
-                          IsVisible="{Binding IsBusy}"
-                          HorizontalOptions="Center"
-                          VerticalOptions="Center" />
+        <ActivityIndicator
+            Grid.RowSpan="3"
+            HorizontalOptions="Center"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center" />
     </Grid>
 </ContentPage>

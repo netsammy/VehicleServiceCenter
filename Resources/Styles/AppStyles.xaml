@@ -24,6 +24,19 @@
     <x:Double x:Key="size480">48</x:Double>
     <x:Double x:Key="size520">52</x:Double>
     <x:Double x:Key="size560">56</x:Double>
+    <!--  List Styles  -->
+    <Style x:Key="ListGridHeaderStyle" TargetType="Grid">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}" />
+        <Setter Property="Padding" Value="10,8" />
+    </Style>
+
+    <Style x:Key="ListHeaderLabelStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}" />
+        <Setter Property="LineBreakMode" Value="TailTruncation" />
+        <Setter Property="MaxLines" Value="1" />
+    </Style>
 
     <!--  https://fluent2.microsoft.design/typography/  -->
     <OnIdiom
@@ -39,19 +52,32 @@
         Default="12">
         <OnIdiom.Desktop>18</OnIdiom.Desktop>
     </OnIdiom>
-
     <OnIdiom
         x:Key="LayoutPadding"
         x:TypeArguments="Thickness"
-        Default="15">
-        <OnIdiom.Desktop>30</OnIdiom.Desktop>
+        Default="16">
+        <OnIdiom.Desktop>32</OnIdiom.Desktop>
     </OnIdiom>
 
     <OnIdiom
         x:Key="LayoutSpacing"
         x:TypeArguments="x:Double"
-        Default="5">
-        <OnIdiom.Desktop>15</OnIdiom.Desktop>
+        Default="8">
+        <OnIdiom.Desktop>16</OnIdiom.Desktop>
+    </OnIdiom>
+
+    <OnIdiom
+        x:Key="CardPadding"
+        x:TypeArguments="Thickness"
+        Default="16">
+        <OnIdiom.Desktop>24</OnIdiom.Desktop>
+    </OnIdiom>
+
+    <OnIdiom
+        x:Key="CardCornerRadius"
+        x:TypeArguments="CornerRadius"
+        Default="8">
+        <OnIdiom.Desktop>12</OnIdiom.Desktop>
     </OnIdiom>
 
     <FontImageSource
@@ -225,11 +251,44 @@
         <Setter Property="Padding" Value="{OnIdiom 15, Desktop=20}" />
     </Style>
 
+    <Style x:Key="CardShadow" TargetType="Shadow">
+        <Setter Property="Offset" Value="0,2" />
+        <Setter Property="Radius" Value="8" />
+        <Setter Property="Opacity" Value="0.2" />
+    </Style>
+
     <Style x:Key="CardStyle" TargetType="Border">
-        <Setter Property="StrokeShape" Value="RoundRectangle 20" />
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}" />
-        <Setter Property="StrokeThickness" Value="0" />
-        <Setter Property="Padding" Value="{OnIdiom 15, Desktop=20}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}" />
+        <Setter Property="Padding" Value="{StaticResource CardPadding}" />
+        <Setter Property="Shadow">
+            <Shadow
+                Brush="{AppThemeBinding Light={StaticResource Black},
+                                        Dark={StaticResource White}}"
+                Opacity="0.1"
+                Radius="8"
+                Offset="0,2" />
+        </Setter>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal" />
+                    <VisualState Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="1.02" />
+                            <Setter Property="Shadow">
+                                <Shadow
+                                    Brush="{AppThemeBinding Light={StaticResource Black},
+                                                            Dark={StaticResource White}}"
+                                    Opacity="0.15"
+                                    Radius="12"
+                                    Offset="0,4" />
+                            </Setter>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
     </Style>
 
     <sf:LabelStyle
@@ -260,6 +319,72 @@
         <Setter Property="TransitionMode" Value="SlideOnTop" />
         <Setter Property="PullingThreshold" Value="100" />
         <Setter Property="ProgressColor" Value="{StaticResource Primary}" />
+    </Style>
+    <Style TargetType="ActivityIndicator">
+        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="WidthRequest" Value="32" />
+        <Setter Property="HeightRequest" Value="32" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="VerticalOptions" Value="Start" />
+    </Style>
+
+    <Style x:Key="LoadingContainer" TargetType="Grid">
+        <Setter Property="IsVisible" Value="{Binding IsBusy}" />
+        <Setter Property="BackgroundColor">
+            <Setter.Value>
+                <AppThemeBinding Dark="{StaticResource DarkBackground}" Light="{StaticResource White}" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Opacity" Value="0.9" />
+        <Setter Property="InputTransparent" Value="True" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style x:Key="PageTitle" TargetType="Label">
+        <Setter Property="FontSize" Value="32" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+        <Setter Property="Margin" Value="0,0,0,16" />
+    </Style>
+
+    <Style x:Key="SectionTitle" TargetType="Label">
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+        <Setter Property="Margin" Value="0,16,0,8" />
+    </Style>
+
+    <Style x:Key="CardTitle" TargetType="Label">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+        <Setter Property="LineBreakMode" Value="TailTruncation" />
+    </Style>
+
+    <Style x:Key="CardBody" TargetType="Label">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+        <Setter Property="LineBreakMode" Value="WordWrap" />
+    </Style>
+
+    <Style x:Key="MetaText" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+        <Setter Property="LineBreakMode" Value="NoWrap" />
+    </Style>
+    <Style x:Key="ListItemTextStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineBreakMode" Value="TailTruncation" />
+        <Setter Property="MaxLines" Value="1" />
+    </Style>
+
+    <Style
+        x:Key="ListHeaderBasedLabelStyle"
+        BasedOn="{StaticResource ListItemTextStyle}"
+        TargetType="Label">
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}" />
     </Style>
 
 </ResourceDictionary>

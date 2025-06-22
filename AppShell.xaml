@@ -5,53 +5,79 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:VehicleServiceCenter.Pages"
     xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     Title="VehicleServiceCenter"
     Shell.FlyoutBehavior="Flyout">
 
-    <ShellContent
-        Title="Dashboard"
-        ContentTemplate="{DataTemplate pages:MainPage}"
-        Icon="{StaticResource IconDashboard}"
-        Route="main" />
+    <Shell.BackgroundColor>
+        <AppThemeBinding Dark="{StaticResource DarkBackground}" Light="{StaticResource LightBackground}" />
+    </Shell.BackgroundColor>
 
-    <!--<ShellContent
-        Title="Projects"
-        ContentTemplate="{DataTemplate pages:ProjectListPage}"
-       
-        Route="projects" />
+    <Shell.FlyoutBackgroundColor>
+        <AppThemeBinding Dark="{StaticResource DarkSecondaryBackground}" Light="{StaticResource LightSecondaryBackground}" />
+    </Shell.FlyoutBackgroundColor>
+    <Shell.FlyoutHeader>
+        <Grid Padding="{StaticResource LayoutPadding}" HeightRequest="160">
+            <Label
+                FontAttributes="Bold"
+                FontSize="24"
+                Text="Vehicle Service Center"
+                TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground},
+                                            Dark={StaticResource LightOnDarkBackground}}"
+                VerticalOptions="Center" />
+        </Grid>
+    </Shell.FlyoutHeader>
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid Padding="15,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image
+                    HeightRequest="24"
+                    Source="{Binding Icon}"
+                    WidthRequest="24" />
+                <Label
+                    Grid.Column="1"
+                    FontSize="16"
+                    Text="{Binding Title}"
+                    VerticalTextAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+    <FlyoutItem FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent
+            Title="Service Records"
+            ContentTemplate="{DataTemplate pages:ServiceRecordListPage}"
+            Icon="{StaticResource IconProjects}"
+            Route="services" />
 
-    <ShellContent
-        Title="Manage Meta"
-        ContentTemplate="{DataTemplate pages:ManageMetaPage}"
-      
-        Route="manage" />-->
-
-    <ShellContent
-        Title="Service Records"
-        ContentTemplate="{DataTemplate pages:ServiceRecordListPage}"
-         Icon="{StaticResource IconProjects}"
-        Route="services" />
-
-    <ShellContent
-        Title="Settings"
-        ContentTemplate="{DataTemplate pages:SettingsPage}"
-          Icon="{StaticResource IconMeta}"
-        Route="settings" />
-
+        <ShellContent
+            Title="Settings"
+            ContentTemplate="{DataTemplate pages:SettingsPage}"
+            Icon="{StaticResource IconMeta}"
+            Route="settings" />
+    </FlyoutItem>
     <Shell.FlyoutFooter>
         <Grid Padding="15">
             <sf:SfSegmentedControl
                 x:Name="ThemeSegmentedControl"
+                Background="{AppThemeBinding Light={StaticResource LightBackground},
+                                             Dark={StaticResource DarkBackground}}"
+                CornerRadius="8"
                 HorizontalOptions="Center"
                 SegmentHeight="40"
                 SegmentWidth="40"
                 SelectionChanged="SfSegmentedControl_SelectionChanged"
+                Stroke="{AppThemeBinding Light={StaticResource Gray200},
+                                         Dark={StaticResource Gray600}}"
+                StrokeThickness="1"
                 VerticalOptions="Center">
                 <sf:SfSegmentedControl.ItemsSource>
                     <x:Array Type="{x:Type sf:SfSegmentItem}">
                         <sf:SfSegmentItem ImageSource="{StaticResource IconDark}" />
                         <sf:SfSegmentItem ImageSource="{StaticResource IconLight}" />
-
                     </x:Array>
                 </sf:SfSegmentedControl.ItemsSource>
             </sf:SfSegmentedControl>

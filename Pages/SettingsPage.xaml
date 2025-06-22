@@ -30,6 +30,23 @@
                 </HorizontalStackLayout>
             </VerticalStackLayout>
 
+            <!--  Receipt Number Settings  -->
+            <VerticalStackLayout Spacing="10">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="Large"
+                    Text="Receipt Number Settings" />
+
+                <Entry
+                    Placeholder="Receipt number prefix (e.g. VSC)"
+                    Text="{Binding ReceiptPrefix}" />
+
+                <Label
+                    FontSize="Small"
+                    Text="This prefix will be used for auto-generating receipt numbers"
+                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+            </VerticalStackLayout>
+
             <!--  Database Settings  -->
             <VerticalStackLayout Spacing="10">
                 <Label

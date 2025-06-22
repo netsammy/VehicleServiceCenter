@@ -10,13 +10,11 @@ public partial class ServiceRecord : ObservableObject
     {
         get => _id;
         set => SetProperty(ref _id, value);
-    }
-
-    [ObservableProperty]
+    }    [ObservableProperty]
     private string _receiptNumber = string.Empty;
 
     [ObservableProperty]
-    private DateTime _date;
+    private DateTime _receiptDate;
 
     [ObservableProperty]
     private string _customerName = string.Empty;
@@ -25,10 +23,14 @@ public partial class ServiceRecord : ObservableObject
     private string _mobileNumber = string.Empty;
 
     [ObservableProperty]
-    private string _address = string.Empty;
+    private string _address = string.Empty;    [ObservableProperty]
+    private string _vehicleNumber = string.Empty;
 
     [ObservableProperty]
-    private string _vehicleNumber = string.Empty;
+    private string _vehicleMake = string.Empty;
+
+    [ObservableProperty]
+    private string _vehicleModel = string.Empty;
 
     [ObservableProperty]
     private double _currentReading;
@@ -47,4 +49,6 @@ public partial class ServiceRecord : ObservableObject
 
     [ObservableProperty]
     private string _mechanicContact = string.Empty;
+
+   
 }

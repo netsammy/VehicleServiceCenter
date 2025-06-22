@@ -1,23 +1,32 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Controls;
 using Font = Microsoft.Maui.Font;
 
 namespace VehicleServiceCenter
 {
     public partial class AppShell : Shell
-    {
-        public AppShell()
+    {        public AppShell()
         {
             InitializeComponent();
-            
-            // Register service routes
+
+            // Register service route
             Routing.RegisterRoute("service", typeof(Pages.ServiceRecordDetailPage));
-            Routing.RegisterRoute("project", typeof(Pages.ProjectDetailPage));
-            Routing.RegisterRoute("task", typeof(Pages.TaskDetailPage));
             Routing.RegisterRoute("settings", typeof(Pages.SettingsPage));
-            
-            var currentTheme = Application.Current!.RequestedTheme;
-            ThemeSegmentedControl.SelectedIndex = currentTheme == AppTheme.Dark ? 0 : 1;
+
+            // Set theme after UI is initialized
+            Dispatcher.Dispatch(() =>
+            {
+                var currentTheme = Application.Current!.RequestedTheme;
+                if (ThemeSegmentedControl != null)
+                {
+                    ThemeSegmentedControl.SelectedIndex = currentTheme == AppTheme.Dark ? 0 : 1;
+                }
+            });
+
+            //// Configure smooth page transitions
+            //Routing.AnimationEasing = Easing.CubicInOut;
+            //Routing.AnimationDuration = 250;
         }
         public static async Task DisplaySnackbarAsync(string message)
         {

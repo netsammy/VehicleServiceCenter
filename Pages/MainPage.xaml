@@ -1,25 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:pageModels="clr-namespace:VehicleServiceCenter.PageModels"             
-             xmlns:models="clr-namespace:VehicleServiceCenter.Models"
-             xmlns:controls="clr-namespace:VehicleServiceCenter.Pages.Controls"
-             xmlns:pullToRefresh="clr-namespace:Syncfusion.Maui.Toolkit.PullToRefresh;assembly=Syncfusion.Maui.Toolkit"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="VehicleServiceCenter.Pages.MainPage"
-             x:DataType="pageModels:MainPageModel"
-             Title="{Binding Today}">
+<ContentPage
+    x:Class="VehicleServiceCenter.Pages.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:VehicleServiceCenter.Pages.Controls"
+    xmlns:models="clr-namespace:VehicleServiceCenter.Models"
+    xmlns:pageModels="clr-namespace:VehicleServiceCenter.PageModels"
+    xmlns:pullToRefresh="clr-namespace:Syncfusion.Maui.Toolkit.PullToRefresh;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Title="{Binding Today}"
+    x:DataType="pageModels:MainPageModel">
 
     <ContentPage.Behaviors>
-        <toolkit:EventToCommandBehavior
-                EventName="NavigatedTo"
-                Command="{Binding NavigatedToCommand}" />
-        <toolkit:EventToCommandBehavior
-                EventName="NavigatedFrom"
-                Command="{Binding NavigatedFromCommand}" />
-        <toolkit:EventToCommandBehavior
-                EventName="Appearing"                
-                Command="{Binding AppearingCommand}" />
+        <toolkit:EventToCommandBehavior Command="{Binding NavigatedToCommand}" EventName="NavigatedTo" />
+        <toolkit:EventToCommandBehavior Command="{Binding NavigatedFromCommand}" EventName="NavigatedFrom" />
+        <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
     </ContentPage.Behaviors>
 
     <ContentPage.Resources>
@@ -29,57 +24,111 @@
     </ContentPage.Resources>
 
     <Grid>
-        <pullToRefresh:SfPullToRefresh
-            IsRefreshing="{Binding IsRefreshing}"
-            RefreshCommand="{Binding RefreshCommand}">
+        <pullToRefresh:SfPullToRefresh IsRefreshing="{Binding IsRefreshing}" RefreshCommand="{Binding RefreshCommand}">
             <pullToRefresh:SfPullToRefresh.PullableContent>
                 <ScrollView>
-                    <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}" Padding="{StaticResource LayoutPadding}">
-                        <controls:CategoryChart />
-                        <Label Text="Projects" Style="{StaticResource Title2}"/>
-                        <ScrollView Orientation="Horizontal" Margin="-30,0">
-                            <HorizontalStackLayout 
-                                Spacing="15" Padding="30,0"
-                                BindableLayout.ItemsSource="{Binding Projects}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:Project">
-                                        <controls:ProjectCardView WidthRequest="200">
-                                            <controls:ProjectCardView.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding NavigateToProjectCommand, Source={RelativeSource AncestorType={x:Type pageModels:MainPageModel}}, x:DataType=pageModels:MainPageModel}" CommandParameter="{Binding .}"/>
-                                            </controls:ProjectCardView.GestureRecognizers>
-                                        </controls:ProjectCardView>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </HorizontalStackLayout>
-                        </ScrollView>
-                        <Grid HeightRequest="44">
-                            <Label Text="Tasks" Style="{StaticResource Title2}" VerticalOptions="Center"/>
-                            <ImageButton 
-                                Source="{StaticResource IconClean}"
-                                HorizontalOptions="End"
-                                VerticalOptions="Center"
-                                Aspect="Center"
-                                HeightRequest="44"
-                                WidthRequest="44"
-                                IsVisible="{Binding HasCompletedTasks}"
-                                Command="{Binding CleanTasksCommand}"
-                                SemanticProperties.Description="Clean tasks" />
-                        </Grid>
-                        <VerticalStackLayout Spacing="15"
-                            BindableLayout.ItemsSource="{Binding Tasks}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <controls:TaskView TaskCompletedCommand="{Binding TaskCompletedCommand, Source={RelativeSource AncestorType={x:Type pageModels:MainPageModel}}, x:DataType=pageModels:MainPageModel}" />
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
+                    <VerticalStackLayout Padding="{StaticResource LayoutPadding}" Spacing="{StaticResource LayoutSpacing}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Style="{StaticResource Title2}" Text="Service Records" />
+                            <SearchBar
+                                HorizontalOptions="Fill"
+                                Placeholder="Search by Receipt#, Vehicle#, Mobile# or Date"
+                                SearchCommand="{Binding SearchCommand}"
+                                Text="{Binding SearchQuery}" />
+                            <Border
+                                Padding="10"
+                                StrokeShape="RoundRectangle 8"
+                                StrokeThickness="1">
+                                <VerticalStackLayout Spacing="10">
+                                    <!--  Header  -->
+                                    <Grid ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label
+                                            Grid.Column="0"
+                                            FontAttributes="Bold"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="Receipt#" />
+                                        <Label
+                                            Grid.Column="1"
+                                            FontAttributes="Bold"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="Vehicle#" />
+                                        <Label
+                                            Grid.Column="2"
+                                            FontAttributes="Bold"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="Mobile#" />
+                                        <Label
+                                            Grid.Column="3"
+                                            FontAttributes="Bold"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="Date" />
+                                        <Label
+                                            Grid.Column="4"
+                                            FontAttributes="Bold"
+                                            Style="{StaticResource ListItemTextStyle}"
+                                            Text="Total" />
+                                    </Grid>
+
+                                    <!--  Data Grid  -->
+                                    <CollectionView
+                                        EmptyView="No service records found"
+                                        HeightRequest="600"
+                                        ItemsSource="{Binding FilteredServiceRecords}">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="models:ServiceRecord">
+                                                <Grid Padding="0,8" ColumnSpacing="10">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="120" />
+                                                        <ColumnDefinition Width="120" />
+                                                        <ColumnDefinition Width="120" />
+                                                        <ColumnDefinition Width="100" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <Label
+                                                        Grid.Column="0"
+                                                        Style="{StaticResource ListItemTextStyle}"
+                                                        Text="{Binding ReceiptNumber}" />
+                                                    <Label
+                                                        Grid.Column="1"
+                                                        Style="{StaticResource ListItemTextStyle}"
+                                                        Text="{Binding VehicleNumber}" />
+                                                    <Label
+                                                        Grid.Column="2"
+                                                        Style="{StaticResource ListItemTextStyle}"
+                                                        Text="{Binding MobileNumber}" />
+                                                    <Label
+                                                        Grid.Column="3"
+                                                        Style="{StaticResource ListItemTextStyle}"
+                                                        Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" />
+                                                    <Label
+                                                        Grid.Column="4"
+                                                        Style="{StaticResource ListItemTextStyle}"
+                                                        Text="{Binding Total, StringFormat='Rs {0:N2}'}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </VerticalStackLayout>
+                            </Border>
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </ScrollView>
             </pullToRefresh:SfPullToRefresh.PullableContent>
         </pullToRefresh:SfPullToRefresh>
 
-        <controls:AddButton 
-            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-            Command="{Binding AddTaskCommand}" />
+        <ActivityIndicator
+            HorizontalOptions="Center"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center" />
     </Grid>
 </ContentPage>

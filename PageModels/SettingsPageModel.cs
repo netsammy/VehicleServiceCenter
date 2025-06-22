@@ -25,6 +25,9 @@ public partial class SettingsPageModel : ObservableObject
     [ObservableProperty]
     private string _password;
 
+    [ObservableProperty]
+    private string _receiptPrefix = string.Empty;
+
     public SettingsPageModel(IPreferences preferences)
     {
         _preferences = preferences;
@@ -50,6 +53,7 @@ public partial class SettingsPageModel : ObservableObject
         DatabaseName = _preferences.Get("DbDatabaseName", "");
         Username = _preferences.Get("DbUsername", "");
         Password = _preferences.Get("DbPassword", "");
+        ReceiptPrefix = _preferences.Get("ReceiptPrefix", "VSC");
         CurrentTheme = _preferences.Get(ThemePreferenceKey, "Light");
     }
 
@@ -71,6 +75,7 @@ public partial class SettingsPageModel : ObservableObject
         _preferences.Set("DbDatabaseName", DatabaseName);
         _preferences.Set("DbUsername", Username);
         _preferences.Set("DbPassword", Password);
+        _preferences.Set("ReceiptPrefix", ReceiptPrefix);
         _preferences.Set(ThemePreferenceKey, CurrentTheme);
 
         await Shell.Current.DisplayAlert("Success", "Settings saved successfully", "OK");
@@ -81,13 +86,21 @@ public partial class SettingsPageModel : ObservableObject
     {
         try
         {
-            using var connection = new SqlConnection(GetConnectionString());
+            var connStr = GetConnectionString();
+            await Shell.Current.DisplayAlert("Connection String", connStr, "OK");
+            
+            using var connection = new SqlConnection(connStr);
             await connection.OpenAsync();
             await Shell.Current.DisplayAlert("Success", "Connection test successful", "OK");
         }
+        catch (SqlException ex)
+        {
+            var details = $"Error Number: {ex.Number}\nMessage: {ex.Message}\nServer: {ex.Server}";
+            await Shell.Current.DisplayAlert("SQL Error", details, "OK");
+        }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Error", $"Connection test failed: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlert("Error", $"Connection test failed: {ex.GetType().Name} - {ex.Message}", "OK");
         }
     }
 

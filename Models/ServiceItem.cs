@@ -28,17 +28,25 @@ public partial class ServiceItem : ObservableObject
                 UpdateAmount();
             }
         }
-    }
-
-    private double _rate;
+    }    private double _rate;
     public double Rate
     {
         get => _rate;
         set
         {
+            var oldValue = _rate;
             if (SetProperty(ref _rate, value))
             {
-                UpdateAmount();
+                try 
+                {
+                    UpdateAmount();
+                }
+                catch
+                {
+                    // If calculation fails, revert the value
+                    _rate = oldValue;
+                    OnPropertyChanged(nameof(Rate));
+                }
             }
         }
     }
@@ -51,10 +59,15 @@ public partial class ServiceItem : ObservableObject
     {
         get => _serviceRecordId;
         set => SetProperty(ref _serviceRecordId, value);
-    }
-
-    private void UpdateAmount()
+    }    private void UpdateAmount()
     {
-        Amount = Quantity * Rate;
+        try
+        {
+            Amount = Math.Round(Quantity * Rate, 2); // Round to 2 decimal places
+        }
+        catch
+        {
+            Amount = 0; // Handle any calculation errors
+        }
     }
 }

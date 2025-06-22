@@ -5,14 +5,15 @@ using VehicleServiceCenter.Models;
 
 namespace VehicleServiceCenter.Data;
 
-public class ServiceRepository
-{
-    private bool _hasBeenInitialized = false;
+public class ServiceRepository : IServiceRepository
+{    private bool _hasBeenInitialized = false;
     private readonly ILogger _logger;
+    private readonly IPreferences _preferences;
 
-    public ServiceRepository(ILogger<ServiceRepository> logger)
+    public ServiceRepository(ILogger<ServiceRepository> logger, IPreferences preferences)
     {
         _logger = logger;
+        _preferences = preferences;
     }
 
     private async Task Init()
@@ -23,18 +24,19 @@ public class ServiceRepository
         using var connection = new SqlConnection(Constants.ConnectionString);
         await connection.OpenAsync();
 
-        var command = connection.CreateCommand();
-        command.CommandText = @"
+        var command = connection.CreateCommand();        command.CommandText = @"
             IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ServiceRecords]') AND type in (N'U'))
             BEGIN
                 CREATE TABLE ServiceRecords (
                     ID INT IDENTITY(1,1) PRIMARY KEY,
                     ReceiptNumber NVARCHAR(50),
-                    Date DATETIME,
+                    ReceiptDate DATETIME,
                     CustomerName NVARCHAR(100),
                     MobileNumber NVARCHAR(20),
                     Address NVARCHAR(200),
                     VehicleNumber NVARCHAR(50),
+                    VehicleMake NVARCHAR(50),
+                    VehicleModel NVARCHAR(50),
                     CurrentReading FLOAT,
                     NextReading FLOAT,
                     Total DECIMAL(18,2),
@@ -69,7 +71,7 @@ public class ServiceRepository
         await connection.OpenAsync();
 
         var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM ServiceRecords ORDER BY Date DESC";
+        command.CommandText = "SELECT * FROM ServiceRecords ORDER BY ReceiptDate DESC";
 
         using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -77,17 +79,19 @@ public class ServiceRepository
             var record = new ServiceRecord
             {
                 ID = reader.GetInt32(reader.GetOrdinal("ID")),
-                ReceiptNumber = reader.GetString(reader.GetOrdinal("ReceiptNumber")),
-                Date = reader.GetDateTime(reader.GetOrdinal("Date")),
-                CustomerName = reader.GetString(reader.GetOrdinal("CustomerName")),
-                MobileNumber = reader.GetString(reader.GetOrdinal("MobileNumber")),
-                Address = reader.GetString(reader.GetOrdinal("Address")),
-                VehicleNumber = reader.GetString(reader.GetOrdinal("VehicleNumber")),
+                ReceiptNumber = reader.IsDBNull(reader.GetOrdinal("ReceiptNumber")) ? "" : reader.GetString(reader.GetOrdinal("ReceiptNumber")),
+                ReceiptDate = reader.GetDateTime(reader.GetOrdinal("ReceiptDate")),
+                CustomerName = reader.IsDBNull(reader.GetOrdinal("CustomerName")) ? "" : reader.GetString(reader.GetOrdinal("CustomerName")),
+                MobileNumber = reader.IsDBNull(reader.GetOrdinal("MobileNumber")) ? "" : reader.GetString(reader.GetOrdinal("MobileNumber")),
+                Address = reader.IsDBNull(reader.GetOrdinal("Address")) ? "" : reader.GetString(reader.GetOrdinal("Address")),
+                VehicleNumber = reader.IsDBNull(reader.GetOrdinal("VehicleNumber")) ? "" : reader.GetString(reader.GetOrdinal("VehicleNumber")),
+                VehicleMake = reader.IsDBNull(reader.GetOrdinal("VehicleMake")) ? "" : reader.GetString(reader.GetOrdinal("VehicleMake")),
+                VehicleModel = reader.IsDBNull(reader.GetOrdinal("VehicleModel")) ? "" : reader.GetString(reader.GetOrdinal("VehicleModel")),
                 CurrentReading = reader.GetDouble(reader.GetOrdinal("CurrentReading")),
                 NextReading = reader.GetDouble(reader.GetOrdinal("NextReading")),
                 Total = (double)reader.GetDecimal(reader.GetOrdinal("Total")),
-                MechanicName = reader.GetString(reader.GetOrdinal("MechanicName")),
-                MechanicContact = reader.GetString(reader.GetOrdinal("MechanicContact"))
+                MechanicName = reader.IsDBNull(reader.GetOrdinal("MechanicName")) ? "" : reader.GetString(reader.GetOrdinal("MechanicName")),
+                MechanicContact = reader.IsDBNull(reader.GetOrdinal("MechanicContact")) ? "" : reader.GetString(reader.GetOrdinal("MechanicContact"))
             };
 
             record.Items = await ListItemsAsync(record.ID);
@@ -114,17 +118,19 @@ public class ServiceRepository
             var record = new ServiceRecord
             {
                 ID = reader.GetInt32(reader.GetOrdinal("ID")),
-                ReceiptNumber = reader.GetString(reader.GetOrdinal("ReceiptNumber")),
-                Date = reader.GetDateTime(reader.GetOrdinal("Date")),
-                CustomerName = reader.GetString(reader.GetOrdinal("CustomerName")),
-                MobileNumber = reader.GetString(reader.GetOrdinal("MobileNumber")),
-                Address = reader.GetString(reader.GetOrdinal("Address")),
-                VehicleNumber = reader.GetString(reader.GetOrdinal("VehicleNumber")),
+                ReceiptNumber = reader.IsDBNull(reader.GetOrdinal("ReceiptNumber")) ? "" : reader.GetString(reader.GetOrdinal("ReceiptNumber")),
+                ReceiptDate = reader.GetDateTime(reader.GetOrdinal("ReceiptDate")),
+                CustomerName = reader.IsDBNull(reader.GetOrdinal("CustomerName")) ? "" : reader.GetString(reader.GetOrdinal("CustomerName")),
+                MobileNumber = reader.IsDBNull(reader.GetOrdinal("MobileNumber")) ? "" : reader.GetString(reader.GetOrdinal("MobileNumber")),
+                Address = reader.IsDBNull(reader.GetOrdinal("Address")) ? "" : reader.GetString(reader.GetOrdinal("Address")),
+                VehicleNumber = reader.IsDBNull(reader.GetOrdinal("VehicleNumber")) ? "" : reader.GetString(reader.GetOrdinal("VehicleNumber")),
+                VehicleMake = reader.IsDBNull(reader.GetOrdinal("VehicleMake")) ? "" : reader.GetString(reader.GetOrdinal("VehicleMake")),
+                VehicleModel = reader.IsDBNull(reader.GetOrdinal("VehicleModel")) ? "" : reader.GetString(reader.GetOrdinal("VehicleModel")),
                 CurrentReading = reader.GetDouble(reader.GetOrdinal("CurrentReading")),
                 NextReading = reader.GetDouble(reader.GetOrdinal("NextReading")),
                 Total = (double)reader.GetDecimal(reader.GetOrdinal("Total")),
-                MechanicName = reader.GetString(reader.GetOrdinal("MechanicName")),
-                MechanicContact = reader.GetString(reader.GetOrdinal("MechanicContact"))
+                MechanicName = reader.IsDBNull(reader.GetOrdinal("MechanicName")) ? "" : reader.GetString(reader.GetOrdinal("MechanicName")),
+                MechanicContact = reader.IsDBNull(reader.GetOrdinal("MechanicContact")) ? "" : reader.GetString(reader.GetOrdinal("MechanicContact"))
             };
 
             record.Items = await ListItemsAsync(record.ID);
@@ -154,8 +160,8 @@ public class ServiceRepository
             {
                 ID = reader.GetInt32(reader.GetOrdinal("ID")),
                 ServiceRecordId = reader.GetInt32(reader.GetOrdinal("ServiceRecordId")),
-                Name = reader.GetString(reader.GetOrdinal("Name")),
-                Grade = reader.GetString(reader.GetOrdinal("Grade")),
+                Name = reader.IsDBNull(reader.GetOrdinal("Name")) ? "" : reader.GetString(reader.GetOrdinal("Name")),
+                Grade = reader.IsDBNull(reader.GetOrdinal("Grade")) ? "" : reader.GetString(reader.GetOrdinal("Grade")),
                 Quantity = reader.GetDouble(reader.GetOrdinal("Quantity")),
                 Rate = (double)reader.GetDecimal(reader.GetOrdinal("Rate")),
                 Amount = (double)reader.GetDecimal(reader.GetOrdinal("Amount"))
@@ -179,25 +185,34 @@ public class ServiceRepository
             var command = connection.CreateCommand();
             command.Transaction = transaction;
 
+            // Save or update service record
             if (record.ID == 0)
             {
                 command.CommandText = @"
-                    INSERT INTO ServiceRecords (ReceiptNumber, Date, CustomerName, MobileNumber, Address, 
-                        VehicleNumber, CurrentReading, NextReading, Total, MechanicName, MechanicContact)
-                    VALUES (@receiptNumber, @date, @customerName, @mobileNumber, @address,
-                        @vehicleNumber, @currentReading, @nextReading, @total, @mechanicName, @mechanicContact);
+                    INSERT INTO ServiceRecords (
+                        ReceiptNumber, ReceiptDate, CustomerName, MobileNumber, 
+                        Address, VehicleNumber, VehicleMake, VehicleModel,
+                        CurrentReading, NextReading, Total, MechanicName, MechanicContact
+                    ) 
+                    VALUES (
+                        @receiptNumber, @receiptDate, @customerName, @mobileNumber,
+                        @address, @vehicleNumber, @vehicleMake, @vehicleModel,
+                        @currentReading, @nextReading, @total, @mechanicName, @mechanicContact
+                    );
                     SELECT SCOPE_IDENTITY();";
             }
             else
             {
                 command.CommandText = @"
-                    UPDATE ServiceRecords 
-                    SET ReceiptNumber = @receiptNumber,
-                        Date = @date,
+                    UPDATE ServiceRecords SET 
+                        ReceiptNumber = @receiptNumber,
+                        ReceiptDate = @receiptDate,
                         CustomerName = @customerName,
                         MobileNumber = @mobileNumber,
                         Address = @address,
                         VehicleNumber = @vehicleNumber,
+                        VehicleMake = @vehicleMake,
+                        VehicleModel = @vehicleModel,
                         CurrentReading = @currentReading,
                         NextReading = @nextReading,
                         Total = @total,
@@ -208,17 +223,19 @@ public class ServiceRepository
                 command.Parameters.AddWithValue("@id", record.ID);
             }
 
-            command.Parameters.AddWithValue("@receiptNumber", record.ReceiptNumber);
-            command.Parameters.AddWithValue("@date", record.Date);
-            command.Parameters.AddWithValue("@customerName", record.CustomerName);
-            command.Parameters.AddWithValue("@mobileNumber", record.MobileNumber);
-            command.Parameters.AddWithValue("@address", record.Address);
-            command.Parameters.AddWithValue("@vehicleNumber", record.VehicleNumber);
+            command.Parameters.AddWithValue("@receiptNumber", (object?)record.ReceiptNumber ?? DBNull.Value);
+            command.Parameters.AddWithValue("@receiptDate", record.ReceiptDate);
+            command.Parameters.AddWithValue("@customerName", (object?)record.CustomerName ?? DBNull.Value);
+            command.Parameters.AddWithValue("@mobileNumber", (object?)record.MobileNumber ?? DBNull.Value);
+            command.Parameters.AddWithValue("@address", (object?)record.Address ?? DBNull.Value);
+            command.Parameters.AddWithValue("@vehicleNumber", (object?)record.VehicleNumber ?? DBNull.Value);
+            command.Parameters.AddWithValue("@vehicleMake", (object?)record.VehicleMake ?? DBNull.Value);
+            command.Parameters.AddWithValue("@vehicleModel", (object?)record.VehicleModel ?? DBNull.Value);
             command.Parameters.AddWithValue("@currentReading", record.CurrentReading);
             command.Parameters.AddWithValue("@nextReading", record.NextReading);
             command.Parameters.AddWithValue("@total", record.Total);
-            command.Parameters.AddWithValue("@mechanicName", record.MechanicName);
-            command.Parameters.AddWithValue("@mechanicContact", record.MechanicContact);
+            command.Parameters.AddWithValue("@mechanicName", (object?)record.MechanicName ?? DBNull.Value);
+            command.Parameters.AddWithValue("@mechanicContact", (object?)record.MechanicContact ?? DBNull.Value);
 
             record.ID = Convert.ToInt32(await command.ExecuteScalarAsync());
 
@@ -238,8 +255,8 @@ public class ServiceRepository
                     INSERT INTO ServiceItems (ServiceRecordId, Name, Grade, Quantity, Rate, Amount)
                     VALUES (@serviceRecordId, @name, @grade, @quantity, @rate, @amount)";
                 command.Parameters.AddWithValue("@serviceRecordId", record.ID);
-                command.Parameters.AddWithValue("@name", item.Name);
-                command.Parameters.AddWithValue("@grade", item.Grade);
+                command.Parameters.AddWithValue("@name", (object?)item.Name ?? DBNull.Value);
+                command.Parameters.AddWithValue("@grade", (object?)item.Grade ?? DBNull.Value);
                 command.Parameters.AddWithValue("@quantity", item.Quantity);
                 command.Parameters.AddWithValue("@rate", item.Rate);
                 command.Parameters.AddWithValue("@amount", item.Amount);
@@ -301,5 +318,39 @@ public class ServiceRepository
         await command.ExecuteNonQueryAsync();
 
         _hasBeenInitialized = false;
+    }
+
+    public async Task<string> GenerateReceiptNumberAsync()
+    {
+        await Init();
+
+        using var connection = new SqlConnection(Constants.ConnectionString);
+        await connection.OpenAsync();        // Get the receipt prefix from preferences
+        var prefix = _preferences.Get("ReceiptPrefix", "VSC");
+
+        // Get the max receipt number for today
+        var command = connection.CreateCommand();
+        command.CommandText = @"
+            SELECT TOP 1 ReceiptNumber 
+            FROM ServiceRecords 
+            WHERE CAST(ReceiptDate AS DATE) = CAST(GETDATE() AS DATE) 
+                AND ReceiptNumber LIKE @prefix + '%'
+            ORDER BY ID DESC";
+        command.Parameters.AddWithValue("@prefix", prefix);
+
+        var lastNumber = await command.ExecuteScalarAsync() as string;
+
+        int sequence = 1;
+        if (lastNumber != null)
+        {
+            // Extract the numeric part from the receipt number
+            var numericPart = lastNumber.Substring(prefix.Length);
+            if (int.TryParse(numericPart, out int lastSequence))
+            {
+                sequence = lastSequence + 1;
+            }
+        }
+
+        return $"{prefix}{sequence:D3}";
     }
 }
