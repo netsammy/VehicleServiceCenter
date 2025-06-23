@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using VehicleServiceCenter.Data;
@@ -42,7 +43,9 @@ public partial class ServiceRecordDetailPageModel : ObservableObject, IQueryAttr
     private double _currentReading;
 
     [ObservableProperty]
-    private double _nextReading;    [ObservableProperty]
+    private double _nextReading;
+
+    [ObservableProperty]
     private ObservableCollection<ServiceItem> _items = new();
 
     [ObservableProperty]
@@ -67,15 +70,16 @@ public partial class ServiceRecordDetailPageModel : ObservableObject, IQueryAttr
     private string _receiptNumberError = string.Empty;
 
     [ObservableProperty]
-    private bool _hasVehicleNumberError;
-
-    [ObservableProperty]
-    private string _vehicleNumberError = string.Empty;
-
-    public ServiceRecordDetailPageModel(IServiceRepository serviceRepository, IErrorHandler errorHandler)
+    private bool _hasVehicleNumberError;    [ObservableProperty]
+    private string _vehicleNumberError = string.Empty;    // Manual command property for testing
+    public ICommand RemoveItemCommand { get; private set; } = null!;    public ServiceRecordDetailPageModel(IServiceRepository serviceRepository, IErrorHandler errorHandler)
     {
         _serviceRepository = serviceRepository;
         _errorHandler = errorHandler;
+        Items.CollectionChanged += Items_CollectionChanged;
+        
+        // Initialize the command manually
+        RemoveItemCommand = new AsyncRelayCommand<ServiceItem>(RemoveItemAsync);
     }
 
     private async Task GenerateReceiptNumber()
@@ -147,7 +151,9 @@ public partial class ServiceRecordDetailPageModel : ObservableObject, IQueryAttr
         {
             IsBusy = false;
         }
-    }    [RelayCommand]
+    }
+
+    [RelayCommand]
     private void AddItem()
     {
         var newItem = new ServiceItem
@@ -158,18 +164,21 @@ public partial class ServiceRecordDetailPageModel : ObservableObject, IQueryAttr
         newItem.PropertyChanged += Item_PropertyChanged;
         Items.Add(newItem);
         UpdateTotal();
-    }
-
-    [RelayCommand]
-    private void RemoveItem(ServiceItem item)
+    }    private async Task RemoveItemAsync(ServiceItem? item)
     {
-        if (item == null || !Items.Contains(item))
-            return;
+        if (item == null) return;
 
-        item.PropertyChanged -= Item_PropertyChanged;
-        Items.Remove(item);
-        OnPropertyChanged(nameof(Items));
-        UpdateTotal();
+        bool answer = await Shell.Current.DisplayAlert(
+            "Confirm Delete",
+            "Do you want to delete this service item?",
+            "Yes",
+            "No");
+
+        if (answer)
+        {
+            Items.Remove(item);
+            // Total will be updated via collection changed event
+        }
     }
 
     [RelayCommand]
@@ -209,7 +218,7 @@ public partial class ServiceRecordDetailPageModel : ObservableObject, IQueryAttr
 
             await _serviceRepository.SaveAsync(_record);
             await Shell.Current.GoToAsync("..");
-            await AppShell.DisplayToastAsync("Service record saved successfully");
+            await Shell.Current.DisplayAlert("Success", "Service record saved successfully", "OK");
         }
         catch (Exception ex)
         {
@@ -233,7 +242,7 @@ public partial class ServiceRecordDetailPageModel : ObservableObject, IQueryAttr
 
             await _serviceRepository.DeleteAsync(_record);
             await Shell.Current.GoToAsync("..");
-            await AppShell.DisplayToastAsync("Service record deleted successfully");
+            await Shell.Current.DisplayAlert("Success", "Service record deleted successfully", "OK");
         }
         catch (Exception ex)
         {
@@ -245,42 +254,63 @@ public partial class ServiceRecordDetailPageModel : ObservableObject, IQueryAttr
         }
     }
 
+    private void Items_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems != null)
+        {
+            foreach (ServiceItem item in e.OldItems)
+            {
+                item.PropertyChanged -= Item_PropertyChanged;
+            }
+        }
+
+        if (e.NewItems != null)
+        {
+            foreach (ServiceItem item in e.NewItems)
+            {
+                item.PropertyChanged += Item_PropertyChanged;
+            }
+        }
+
+        UpdateTotal();
+    }
+
+    partial void OnReceiptNumberChanged(string value)
+    {
+        HasReceiptNumberError = string.IsNullOrWhiteSpace(value);
+        ReceiptNumberError = HasReceiptNumberError ? "Receipt number is required" : string.Empty;
+    }
+
+    partial void OnVehicleNumberChanged(string value)
+    {
+        HasVehicleNumberError = string.IsNullOrWhiteSpace(value);
+        VehicleNumberError = HasVehicleNumberError ? "Vehicle number is required" : string.Empty;
+    }
+
     private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(ServiceItem.Amount))
         {
             UpdateTotal();
         }
-    }    partial void OnItemsChanged(ObservableCollection<ServiceItem> value)
+    }
+
+    private void UpdateTotal()
     {
-        // Reattach property changed handlers
-        foreach (var item in value)
-        {
-            item.PropertyChanged -= Item_PropertyChanged; // Remove to avoid duplicates
-            item.PropertyChanged += Item_PropertyChanged;
-        }
-        UpdateTotal();
-    }    private void UpdateTotal()
-    {
-        Total = Items?.Sum(x => x?.Amount ?? 0) ?? 0;
-        OnPropertyChanged(nameof(Total)); // Ensure the UI updates
+        Total = Items.Sum(x => x.Amount);
     }
 
     private List<string> ValidateFields()
     {
         var errors = new List<string>();
 
-        HasReceiptNumberError = string.IsNullOrWhiteSpace(ReceiptNumber);
         if (HasReceiptNumberError)
         {
-            ReceiptNumberError = "Receipt number is required";
             errors.Add(ReceiptNumberError);
         }
 
-        HasVehicleNumberError = string.IsNullOrWhiteSpace(VehicleNumber);
         if (HasVehicleNumberError)
         {
-            VehicleNumberError = "Vehicle number is required";
             errors.Add(VehicleNumberError);
         }
 
@@ -289,28 +319,6 @@ public partial class ServiceRecordDetailPageModel : ObservableObject, IQueryAttr
             errors.Add("At least one service item is required");
         }
 
-        if (Items.Any(x => string.IsNullOrWhiteSpace(x.Name)))
-        {
-            errors.Add("Item name is required for all items");
-        }
-
-        if (Items.Any(x => x.Quantity <= 0))
-        {
-            errors.Add("Quantity must be greater than 0 for all items");
-        }
-
         return errors;
-    }
-
-    partial void OnReceiptNumberChanged(string value)
-    {
-        HasReceiptNumberError = false;
-        ReceiptNumberError = string.Empty;
-    }
-
-    partial void OnVehicleNumberChanged(string value)
-    {
-        HasVehicleNumberError = false;
-        VehicleNumberError = string.Empty;
     }
 }

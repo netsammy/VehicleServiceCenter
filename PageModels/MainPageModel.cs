@@ -5,12 +5,12 @@ using VehicleServiceCenter.Data;
 using VehicleServiceCenter.Services;
 
 namespace VehicleServiceCenter.PageModels
-{
-    public partial class MainPageModel : ObservableObject
+{    public partial class MainPageModel : ObservableObject
     {
         private bool _isNavigatedTo;
         private readonly ServiceRepository _serviceRepository;
         private readonly ModalErrorHandler _errorHandler;
+        private readonly IPreferences _preferences;
        
 
         [ObservableProperty]
@@ -29,14 +29,14 @@ namespace VehicleServiceCenter.PageModels
         bool _isRefreshing;
 
         [ObservableProperty]
-        private string _today = DateTime.Now.ToString("dddd, MMM d");
-
-        public MainPageModel(
+        private string _today = DateTime.Now.ToString("dddd, MMM d");        public MainPageModel(
             ServiceRepository serviceRepository, 
-            ModalErrorHandler errorHandler)
+            ModalErrorHandler errorHandler,
+            IPreferences preferences)
         {
             _serviceRepository = serviceRepository;
             _errorHandler = errorHandler;
+            _preferences = preferences;
         }
 
         partial void OnSearchQueryChanged(string value)
@@ -59,14 +59,17 @@ namespace VehicleServiceCenter.PageModels
                 r.MobileNumber?.ToLower().Contains(query) == true ||
                 r.ReceiptDate.ToString("dd/MM/yyyy").Contains(query)
             ).ToList();
-        }
-
-        private async Task LoadData()
+        }        private async Task LoadData()
         {
             try
             {
                 IsBusy = true;
-                ServiceRecords = await _serviceRepository.ListAsync();
+                
+                // Get the default record limit from settings (for main page, use a smaller limit)
+                var defaultLimit = _preferences.Get("DefaultRecordLimit", 20);
+                var mainPageLimit = Math.Min(defaultLimit > 0 ? defaultLimit : 20, 10); // Max 10 for main page
+                
+                ServiceRecords = await _serviceRepository.ListAsync(mainPageLimit);
                 FilterServiceRecords();
             }
             finally

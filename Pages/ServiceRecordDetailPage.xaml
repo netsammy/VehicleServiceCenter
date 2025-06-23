@@ -1,131 +1,205 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="VehicleServiceCenter.Pages.ServiceRecordDetailPage"
+    x:Name="servicePage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:models="clr-namespace:VehicleServiceCenter.Models"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:VehicleServiceCenter.PageModels"
     Title="Service Record">
-
-    <ScrollView>        <VerticalStackLayout Padding="10" Spacing="10">
+    <ScrollView>
+        <VerticalStackLayout Padding="{StaticResource LayoutPadding}" Spacing="8">
             <!--  Customer Info Section  -->
             <Border
                 Padding="10"
                 StrokeShape="RoundRectangle 8"
                 StrokeThickness="1">
-                <VerticalStackLayout Spacing="10">
-                    <Label Style="{StaticResource Title2}" Text="Customer Information" />
-
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        FontSize="13"
+                        Style="{StaticResource Title2}"
+                        Text="Customer Information" />
                     <Grid
                         ColumnDefinitions="Auto,*,Auto,*"
-                        ColumnSpacing="10"
+                        ColumnSpacing="8"
                         RowDefinitions="Auto,Auto,Auto"
-                        RowSpacing="10">
+                        RowSpacing="8">
                         <Label
                             Grid.Row="0"
                             Grid.Column="0"
-                            Text="Receipt #:" />                            <Entry
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource White},
-                                                                  Dark={StaticResource White}}"
-                                Text="{Binding ReceiptNumber}"
-                                TextColor="{AppThemeBinding Light={StaticResource Black},
-                                                            Dark={StaticResource Black}}" />
+                            FontSize="13"
+                            Text="Receipt #:"
+                            VerticalOptions="Center" />
+                        <Entry
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
+                                                              Dark={StaticResource White}}"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Text="{Binding ReceiptNumber}"
+                            TextColor="{AppThemeBinding Light={StaticResource Black},
+                                                        Dark={StaticResource Black}}" />
 
                         <Label
                             Grid.Row="0"
                             Grid.Column="2"
-                            Text="Receipt Date:" />
+                            FontSize="13"
+                            HorizontalOptions="Center"
+                            Text="Receipt Date:"
+                            VerticalOptions="Center" />
                         <DatePicker
                             Grid.Row="0"
                             Grid.Column="3"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White},
                                                               Dark={StaticResource White}}"
                             Date="{Binding ReceiptDate}"
+                            FontSize="13"
+                            HeightRequest="32"
                             TextColor="{AppThemeBinding Light={StaticResource Black},
                                                         Dark={StaticResource Black}}" />
-
                         <Label
                             Grid.Row="1"
                             Grid.Column="0"
-                            Text="Customer:" />
-                        <Entry
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
-                                                              Dark={StaticResource White}}"
-                            Text="{Binding CustomerName}"
-                            TextColor="{AppThemeBinding Light={StaticResource Black},
-                                                        Dark={StaticResource Black}}" />
-
-                        <Label
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            Text="Mobile #:" />
-                        <Entry
-                            Grid.Row="1"
-                            Grid.Column="3"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
-                                                              Dark={StaticResource White}}"
-                            Keyboard="Telephone"
-                            Text="{Binding MobileNumber}"
-                            TextColor="{AppThemeBinding Light={StaticResource Black},
-                                                        Dark={StaticResource Black}}" />
-
-                        <Label
-                            Grid.Row="2"
-                            Grid.Column="0"
-                            Text="Address:" />
-                        <Entry
-                            Grid.Row="2"
-                            Grid.Column="1"
-                            Grid.ColumnSpan="3"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
-                                                              Dark={StaticResource White}}"
-                            Text="{Binding Address}"
-                            TextColor="{AppThemeBinding Light={StaticResource Black},
-                                                        Dark={StaticResource Black}}" />
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>            
-            <!--  Vehicle Info Section  -->            <Border
-                Padding="10"
-                StrokeShape="RoundRectangle 8"
-                StrokeThickness="1">
-                <VerticalStackLayout Spacing="10">
-                    <Label Style="{StaticResource Title2}" Text="Vehicle Information" />                    <Grid
-                        ColumnDefinitions="100,*"
-                        ColumnSpacing="8"
-                        RowDefinitions="Auto,Auto,Auto,Auto,Auto"
-                        RowSpacing="8">
-                        <Label
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Text="Vehicle #:"
-                            VerticalOptions="Center" />                            <Entry
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource White},
-                                                                  Dark={StaticResource White}}"
-                                MaximumHeightRequest="40"
-                                Text="{Binding VehicleNumber}"
-                                TextColor="{AppThemeBinding Light={StaticResource Black},
-                                                            Dark={StaticResource Black}}" />
-
-                        <Label
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Text="Current Reading:"
+                            FontSize="13"
+                            Text="Customer:"
                             VerticalOptions="Center" />
                         <Entry
                             Grid.Row="1"
                             Grid.Column="1"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White},
                                                               Dark={StaticResource White}}"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Text="{Binding CustomerName}"
+                            TextColor="{AppThemeBinding Light={StaticResource Black},
+                                                        Dark={StaticResource Black}}" />
+                        <Label
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            FontSize="13"
+                            Text="Mobile #:"
+                            VerticalOptions="Center" />
+                        <Entry
+                            Grid.Row="1"
+                            Grid.Column="3"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
+                                                              Dark={StaticResource White}}"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Keyboard="Telephone"
+                            Text="{Binding MobileNumber}"
+                            TextColor="{AppThemeBinding Light={StaticResource Black},
+                                                        Dark={StaticResource Black}}" />
+                        <Label
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            FontSize="13"
+                            Text="Address:"
+                            VerticalOptions="Center" />
+                        <Entry
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="3"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
+                                                              Dark={StaticResource White}}"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Text="{Binding Address}"
+                            TextColor="{AppThemeBinding Light={StaticResource Black},
+                                                        Dark={StaticResource Black}}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+            <!--  Vehicle Info Section  -->
+            <Border
+                Padding="10"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        FontSize="13"
+                        Style="{StaticResource Title2}"
+                        Text="Vehicle Information" />
+                    <Grid
+                        ColumnDefinitions="Auto,*,Auto,*,Auto,*"
+                        ColumnSpacing="8"
+                        RowDefinitions="Auto,Auto,Auto"
+                        RowSpacing="8">
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            FontSize="13"
+                            Text="Vehicle #:"
+                            VerticalOptions="Center" />
+                        <Entry
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
+                                                              Dark={StaticResource White}}"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Text="{Binding VehicleNumber}"
+                            TextColor="{AppThemeBinding Light={StaticResource Black},
+                                                        Dark={StaticResource Black}}" />
+
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            FontSize="13"
+                            Text="Make:"
+                            VerticalOptions="Center" />
+                        <Entry
+                            Grid.Row="0"
+                            Grid.Column="3"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
+                                                              Dark={StaticResource White}}"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Placeholder="Enter vehicle make"
+                            PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400},
+                                                               Dark={StaticResource Gray600}}"
+                            Text="{Binding VehicleMake}"
+                            TextColor="{AppThemeBinding Light={StaticResource Black},
+                                                        Dark={StaticResource Black}}" />
+
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="4"
+                            FontSize="13"
+                            Text="Model:"
+                            VerticalOptions="Center" />
+                        <Entry
+                            Grid.Row="0"
+                            Grid.Column="5"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
+                                                              Dark={StaticResource White}}"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Placeholder="Enter vehicle model"
+                            PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400},
+                                                               Dark={StaticResource Gray600}}"
+                            Text="{Binding VehicleModel}"
+                            TextColor="{AppThemeBinding Light={StaticResource Black},
+                                                        Dark={StaticResource Black}}" />
+
+                        <Label
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            FontSize="13"
+                            Text="Current Reading:"
+                            VerticalOptions="Center" />
+                        <Entry
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="5"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
+                                                              Dark={StaticResource White}}"
+                            FontSize="13"
+                            HeightRequest="32"
                             Keyboard="Numeric"
                             MaxLength="10"
-                            MaximumHeightRequest="40"
                             Placeholder="Enter current reading"
                             PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400},
                                                                Dark={StaticResource Gray600}}"
@@ -138,19 +212,24 @@
                                     MaximumDecimalPlaces="0"
                                     MaximumValue="999999"
                                     MinimumValue="0" />
-                            </Entry.Behaviors>                        
-                        </Entry>                        <Label
+                            </Entry.Behaviors>
+                        </Entry>
+                        <Label
                             Grid.Row="2"
                             Grid.Column="0"
+                            FontSize="13"
                             Text="Next Reading:"
-                            VerticalOptions="Center" />                        <Entry
+                            VerticalOptions="Center" />
+                        <Entry
                             Grid.Row="2"
                             Grid.Column="1"
+                            Grid.ColumnSpan="5"
                             BackgroundColor="{AppThemeBinding Light={StaticResource White},
                                                               Dark={StaticResource White}}"
+                            FontSize="13"
+                            HeightRequest="32"
                             Keyboard="Numeric"
                             MaxLength="10"
-                            MaximumHeightRequest="40"
                             Placeholder="Enter next reading"
                             PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400},
                                                                Dark={StaticResource Gray600}}"
@@ -164,78 +243,66 @@
                                     MaximumValue="999999"
                                     MinimumValue="0" />
                             </Entry.Behaviors>
-                        </Entry>                        <Label
-                            Grid.Row="3"
-                            Grid.Column="0"
-                            Text="Make:"
-                            VerticalOptions="Center" />
-                        <Entry
-                            Grid.Row="3"
-                            Grid.Column="1"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
-                                                              Dark={StaticResource White}}"
-                            MaximumHeightRequest="40"
-                            Placeholder="Enter vehicle make"
-                            PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400},
-                                                               Dark={StaticResource Gray600}}"
-                            Text="{Binding VehicleMake}"
-                            TextColor="{AppThemeBinding Light={StaticResource Black},
-                                                        Dark={StaticResource Black}}" />
-
-                        <Label
-                            Grid.Row="4"
-                            Grid.Column="0"
-                            Text="Model:"
-                            VerticalOptions="Center" />
-                        <Entry
-                            Grid.Row="4"
-                            Grid.Column="1"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White},
-                                                              Dark={StaticResource White}}"
-                            MaximumHeightRequest="40"
-                            Placeholder="Enter vehicle model"
-                            PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400},
-                                                               Dark={StaticResource Gray600}}"
-                            Text="{Binding VehicleModel}"
-                            TextColor="{AppThemeBinding Light={StaticResource Black},
-                                                        Dark={StaticResource Black}}" />
+                        </Entry>
                     </Grid>
                 </VerticalStackLayout>
             </Border>
 
-            <!--  Service Items Section  -->            <Border
+            <!--  Service Items Section  -->
+            <Border
                 Padding="10"
                 StrokeShape="RoundRectangle 8"
                 StrokeThickness="1">
-                <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Style="{StaticResource Title2}" Text="Service Items" />
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Label
+                            FontSize="13"
+                            Style="{StaticResource Title2}"
+                            Text="Service Items" />
                         <Button
                             Grid.Column="1"
                             Command="{Binding AddItemCommand}"
+                            FontSize="13"
+                            HeightRequest="32"
                             Text="Add Item" />
-                    </Grid>                    
+                    </Grid>
+
                     <!--  Items Grid Header  -->
                     <Grid
                         ColumnDefinitions="3*,120,Auto,Auto,Auto,Auto"
                         ColumnSpacing="5"
                         Style="{StaticResource ListGridHeaderStyle}">
-                        <Label Grid.Column="0" Text="Item Name" />
-                        <Label Grid.Column="1" Text="Grade" />
+                        <Label
+                            Grid.Column="0"
+                            FontSize="13"
+                            Text="Item Name"
+                            VerticalOptions="Center" />
+                        <Label
+                            Grid.Column="1"
+                            FontSize="13"
+                            Text="Grade"
+                            VerticalOptions="Center" />
                         <Label
                             Grid.Column="2"
+                            FontSize="13"
                             Text="Qty"
+                            VerticalOptions="Center"
                             WidthRequest="60" />
                         <Label
                             Grid.Column="3"
+                            FontSize="13"
                             Text="Rate"
+                            VerticalOptions="Center"
                             WidthRequest="80" />
                         <Label
                             Grid.Column="4"
+                            FontSize="13"
                             Text="Amount (Rs)"
+                            VerticalOptions="Center"
                             WidthRequest="120" />
                         <Label
                             Grid.Column="5"
+                            FontSize="13"
                             Text=""
                             WidthRequest="35" />
                     </Grid>
@@ -243,9 +310,9 @@
                     <!--  Items Grid  -->
                     <CollectionView ItemsSource="{Binding Items}">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:ServiceItem">                                  
+                            <DataTemplate x:DataType="models:ServiceItem">
                                 <Grid
-                                    Padding="0,8"
+                                    Padding="0,4"
                                     ColumnDefinitions="3*,120,Auto,Auto,Auto,Auto"
                                     ColumnSpacing="5">
                                     <Entry
@@ -253,6 +320,8 @@
                                         Margin="0,0,5,0"
                                         BackgroundColor="{AppThemeBinding Light={StaticResource White},
                                                                           Dark={StaticResource White}}"
+                                        FontSize="13"
+                                        HeightRequest="32"
                                         Placeholder="Enter item name"
                                         PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400},
                                                                            Dark={StaticResource Gray600}}"
@@ -268,6 +337,8 @@
                                         Margin="0,0,5,0"
                                         BackgroundColor="{AppThemeBinding Light={StaticResource White},
                                                                           Dark={StaticResource White}}"
+                                        FontSize="13"
+                                        HeightRequest="32"
                                         Placeholder="Enter grade"
                                         PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400},
                                                                            Dark={StaticResource Gray600}}"
@@ -279,6 +350,8 @@
                                         Margin="0,0,5,0"
                                         BackgroundColor="{AppThemeBinding Light={StaticResource White},
                                                                           Dark={StaticResource White}}"
+                                        FontSize="13"
+                                        HeightRequest="32"
                                         Keyboard="Numeric"
                                         MaxLength="5"
                                         Placeholder="Qty"
@@ -300,41 +373,49 @@
                                         Margin="0,0,5,0"
                                         BackgroundColor="{AppThemeBinding Light={StaticResource White},
                                                                           Dark={StaticResource White}}"
+                                        FontSize="13"
+                                        HeightRequest="32"
                                         Keyboard="Numeric"
-                                        MaxLength="10"                                        Placeholder="Rate"
+                                        MaxLength="10"
+                                        Placeholder="Rate"
                                         PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400},
                                                                            Dark={StaticResource Gray600}}"
                                         Text="{Binding Rate, Mode=TwoWay}"
                                         TextColor="{AppThemeBinding Light={StaticResource Black},
                                                                     Dark={StaticResource Black}}"
                                         WidthRequest="80">
-                                        <Entry.Behaviors>                                            <toolkit:NumericValidationBehavior
+                                        <Entry.Behaviors>
+                                            <toolkit:NumericValidationBehavior
                                                 Flags="ValidateOnValueChanged"
                                                 MaximumDecimalPlaces="2"
-                                                MinimumValue="0"
-                                                MaximumValue="999999" />
+                                                MaximumValue="999999"
+                                                MinimumValue="0" />
                                         </Entry.Behaviors>
                                     </Entry>
                                     <Label
                                         Grid.Column="4"
                                         Margin="0,0,5,0"
-                                        HorizontalTextAlignment="End"
+                                        FontSize="13"
+                                        HorizontalTextAlignment="Start"
                                         Text="{Binding Amount, StringFormat='Rs {0:N2}'}"
                                         VerticalOptions="Center"
-                                        WidthRequest="120" />                                      <Button
+                                        WidthRequest="120" />                                    <Button
+                                        x:Name="deleteButton"
                                         Grid.Column="5"
                                         Padding="5"
                                         BackgroundColor="{AppThemeBinding Light={StaticResource Red},
                                                                           Dark={StaticResource Red}}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type VerticalStackLayout}}, Path=BindingContext.RemoveItemCommand}"
-                                        CommandParameter="{Binding}"
+                                        Command="{Binding Source={x:Reference servicePage}, Path=BindingContext.RemoveItemCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnDeleteButtonClicked"
                                         CornerRadius="18"
-                                        FontSize="18"
-                                        HeightRequest="35"
+                                        FontSize="13"
+                                        HeightRequest="32"
                                         Text="×"
                                         TextColor="White"
                                         VerticalOptions="Center"
-                                        WidthRequest="35" />
+                                        WidthRequest="32" />
+
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
@@ -345,6 +426,7 @@
                         <Label
                             Grid.Column="1"
                             FontAttributes="Bold"
+                            FontSize="13"
                             HorizontalTextAlignment="End"
                             Text="{Binding Total, StringFormat='Total: Rs {0:N2}'}" />
                     </Grid>
@@ -355,11 +437,8 @@
             <Button
                 Margin="0,10,0,20"
                 Command="{Binding SaveCommand}"
+                FontSize="13"
+                HeightRequest="32"
                 Text="Save Service Record" />
-        </VerticalStackLayout>
-    </ScrollView>
-
-    <ContentPage.Behaviors>
-        <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
-    </ContentPage.Behaviors>
+        </VerticalStackLayout>    </ScrollView>
 </ContentPage>

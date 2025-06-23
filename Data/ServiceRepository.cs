@@ -61,9 +61,7 @@ public class ServiceRepository : IServiceRepository
 
         await command.ExecuteNonQueryAsync();
         _hasBeenInitialized = true;
-    }
-
-    public async Task<List<ServiceRecord>> ListAsync()
+    }    public async Task<List<ServiceRecord>> ListAsync(int? limit = null)
     {
         await Init();
         var serviceRecords = new List<ServiceRecord>();
@@ -71,7 +69,14 @@ public class ServiceRepository : IServiceRepository
         await connection.OpenAsync();
 
         var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM ServiceRecords ORDER BY ReceiptDate DESC";
+        if (limit.HasValue && limit.Value > 0)
+        {
+            command.CommandText = $"SELECT TOP ({limit.Value}) * FROM ServiceRecords ORDER BY ReceiptDate DESC";
+        }
+        else
+        {
+            command.CommandText = "SELECT * FROM ServiceRecords ORDER BY ReceiptDate DESC";
+        }
 
         using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())

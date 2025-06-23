@@ -23,10 +23,11 @@ public partial class SettingsPageModel : ObservableObject
     private string _username;
 
     [ObservableProperty]
-    private string _password;
+    private string _password;    [ObservableProperty]
+    private string _receiptPrefix = string.Empty;
 
     [ObservableProperty]
-    private string _receiptPrefix = string.Empty;
+    private int _defaultRecordLimit;
 
     public SettingsPageModel(IPreferences preferences)
     {
@@ -48,12 +49,12 @@ public partial class SettingsPageModel : ObservableObject
     }
 
     private void LoadSettings()
-    {
-        ServerName = _preferences.Get("DbServerName", "");
+    {        ServerName = _preferences.Get("DbServerName", "");
         DatabaseName = _preferences.Get("DbDatabaseName", "");
         Username = _preferences.Get("DbUsername", "");
         Password = _preferences.Get("DbPassword", "");
         ReceiptPrefix = _preferences.Get("ReceiptPrefix", "VSC");
+        DefaultRecordLimit = _preferences.Get("DefaultRecordLimit", 20);
         CurrentTheme = _preferences.Get(ThemePreferenceKey, "Light");
     }
 
@@ -70,12 +71,12 @@ public partial class SettingsPageModel : ObservableObject
 
     [RelayCommand]
     private async Task SaveSettings()
-    {
-        _preferences.Set("DbServerName", ServerName);
+    {        _preferences.Set("DbServerName", ServerName);
         _preferences.Set("DbDatabaseName", DatabaseName);
         _preferences.Set("DbUsername", Username);
         _preferences.Set("DbPassword", Password);
         _preferences.Set("ReceiptPrefix", ReceiptPrefix);
+        _preferences.Set("DefaultRecordLimit", DefaultRecordLimit);
         _preferences.Set(ThemePreferenceKey, CurrentTheme);
 
         await Shell.Current.DisplayAlert("Success", "Settings saved successfully", "OK");

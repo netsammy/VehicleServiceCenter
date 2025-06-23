@@ -5,28 +5,28 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:VehicleServiceCenter.Pages"
     xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    Title="VehicleServiceCenter"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"    
+    Title="Vehicle Service Center"
+    Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource DarkBackground}}"
+    Shell.ForegroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource LightOnDarkBackground}}"
+    Shell.TitleColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource LightOnDarkBackground}}"
     Shell.FlyoutBehavior="Flyout">
-
-    <Shell.BackgroundColor>
-        <AppThemeBinding Dark="{StaticResource DarkBackground}" Light="{StaticResource LightBackground}" />
-    </Shell.BackgroundColor>
 
     <Shell.FlyoutBackgroundColor>
         <AppThemeBinding Dark="{StaticResource DarkSecondaryBackground}" Light="{StaticResource LightSecondaryBackground}" />
     </Shell.FlyoutBackgroundColor>
+
     <Shell.FlyoutHeader>
         <Grid Padding="{StaticResource LayoutPadding}" HeightRequest="160">
             <Label
                 FontAttributes="Bold"
                 FontSize="24"
                 Text="Vehicle Service Center"
-                TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground},
-                                            Dark={StaticResource LightOnDarkBackground}}"
+                TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                 VerticalOptions="Center" />
         </Grid>
     </Shell.FlyoutHeader>
+
     <Shell.ItemTemplate>
         <DataTemplate>
             <Grid Padding="15,10">
@@ -37,15 +37,21 @@
                 <Image
                     HeightRequest="24"
                     Source="{Binding Icon}"
-                    WidthRequest="24" />
+                    WidthRequest="24">
+                    <Image.Behaviors>
+                        <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Dark={StaticResource White}, Light={StaticResource Black}}" />
+                    </Image.Behaviors>
+                </Image>
                 <Label
                     Grid.Column="1"
-                    FontSize="16"
+                    FontSize="13"
                     Text="{Binding Title}"
+                    TextColor="{AppThemeBinding Dark={StaticResource White}, Light={StaticResource Black}}"
                     VerticalTextAlignment="Center" />
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
+
     <FlyoutItem FlyoutDisplayOptions="AsMultipleItems">
         <ShellContent
             Title="Service Records"
@@ -59,19 +65,18 @@
             Icon="{StaticResource IconMeta}"
             Route="settings" />
     </FlyoutItem>
+
     <Shell.FlyoutFooter>
         <Grid Padding="15">
             <sf:SfSegmentedControl
                 x:Name="ThemeSegmentedControl"
-                Background="{AppThemeBinding Light={StaticResource LightBackground},
-                                             Dark={StaticResource DarkBackground}}"
+                Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
                 CornerRadius="8"
                 HorizontalOptions="Center"
                 SegmentHeight="40"
                 SegmentWidth="40"
                 SelectionChanged="SfSegmentedControl_SelectionChanged"
-                Stroke="{AppThemeBinding Light={StaticResource Gray200},
-                                         Dark={StaticResource Gray600}}"
+                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
                 StrokeThickness="1"
                 VerticalOptions="Center">
                 <sf:SfSegmentedControl.ItemsSource>

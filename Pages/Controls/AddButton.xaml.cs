@@ -1,6 +1,6 @@
 namespace VehicleServiceCenter.Pages.Controls
 {
-    public partial class AddButton
+    public partial class AddButton : Button
     {
         public AddButton()
         {

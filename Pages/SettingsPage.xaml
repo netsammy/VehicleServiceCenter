@@ -11,80 +11,152 @@
         <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
     </ContentPage.Behaviors>
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <VerticalStackLayout Padding="15" Spacing="15">
             <!--  Theme Settings  -->
-            <VerticalStackLayout Spacing="10">
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="Large"
-                    Text="Theme Settings" />
+            <Border
+                Padding="10"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        Text="Theme Settings" />
 
-                <HorizontalStackLayout Spacing="10">
-                    <Label Text="App Theme" VerticalOptions="Center" />
-                    <Picker SelectedIndexChanged="OnThemeSelectionChanged" SelectedItem="{Binding CurrentTheme}">
-                        <Picker.Items>
-                            <x:String>Light</x:String>
-                            <x:String>Dark</x:String>
-                        </Picker.Items>
-                    </Picker>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label
+                            Grid.Column="0"
+                            FontSize="13"
+                            Text="App Theme"
+                            VerticalOptions="Center" />
+                        <Picker
+                            Grid.Column="1"
+                            FontSize="13"
+                            HeightRequest="32"
+                            SelectedIndexChanged="OnThemeSelectionChanged"
+                            SelectedItem="{Binding CurrentTheme}">
+                            <Picker.Items>
+                                <x:String>Light</x:String>
+                                <x:String>Dark</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
 
             <!--  Receipt Number Settings  -->
-            <VerticalStackLayout Spacing="10">
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="Large"
-                    Text="Receipt Number Settings" />
+            <Border
+                Padding="10"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        Text="Receipt Number Settings" />
 
-                <Entry
-                    Placeholder="Receipt number prefix (e.g. VSC)"
-                    Text="{Binding ReceiptPrefix}" />
+                    <Entry
+                        FontSize="13"
+                        HeightRequest="32"
+                        Placeholder="Receipt number prefix (e.g. VSC)"
+                        Text="{Binding ReceiptPrefix}" />
 
-                <Label
-                    FontSize="Small"
-                    Text="This prefix will be used for auto-generating receipt numbers"
-                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
-            </VerticalStackLayout>
+                    <Label
+                        FontSize="12"
+                        Text="This prefix will be used for auto-generating receipt numbers"
+                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                </VerticalStackLayout>            </Border>
+
+            <!--  Display Settings  -->
+            <Border
+                Padding="10"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        Text="Display Settings" />
+
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label
+                            Grid.Column="0"
+                            FontSize="13"
+                            Text="Default Record Limit"
+                            VerticalOptions="Center" />
+                        <Entry
+                            Grid.Column="1"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Keyboard="Numeric"
+                            Placeholder="Number of records to show"
+                            Text="{Binding DefaultRecordLimit}" />
+                    </Grid>
+
+                    <Label
+                        FontSize="12"
+                        Text="Number of latest records to display on first load (0 = show all records)"
+                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                </VerticalStackLayout>
+            </Border>
 
             <!--  Database Settings  -->
-            <VerticalStackLayout Spacing="10">
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="Large"
-                    Text="Database Settings" />
+            <Border
+                Padding="10"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        Text="Database Settings" />
 
-                <Entry
-                    x:Name="ServerEntry"
-                    Placeholder="Server name (e.g. localhost\SQLEXPRESS)"
-                    Text="{Binding ServerName}" />
+                    <Entry
+                        x:Name="ServerEntry"
+                        FontSize="13"
+                        HeightRequest="32"
+                        Placeholder="Server name (e.g. localhost\SQLEXPRESS)"
+                        Text="{Binding ServerName}" />
 
-                <Entry
-                    x:Name="DatabaseEntry"
-                    Placeholder="Database name"
-                    Text="{Binding DatabaseName}" />
+                    <Entry
+                        x:Name="DatabaseEntry"
+                        FontSize="13"
+                        HeightRequest="32"
+                        Placeholder="Database name"
+                        Text="{Binding DatabaseName}" />
 
-                <Entry
-                    x:Name="UsernameEntry"
-                    Placeholder="Username (leave empty for Windows auth)"
-                    Text="{Binding Username}" />
+                    <Entry
+                        x:Name="UsernameEntry"
+                        FontSize="13"
+                        HeightRequest="32"
+                        Placeholder="Username (leave empty for Windows auth)"
+                        Text="{Binding Username}" />
 
-                <Entry
-                    x:Name="PasswordEntry"
-                    IsPassword="True"
-                    Placeholder="Password (leave empty for Windows auth)"
-                    Text="{Binding Password}" />
+                    <Entry
+                        x:Name="PasswordEntry"
+                        FontSize="13"
+                        HeightRequest="32"
+                        IsPassword="True"
+                        Placeholder="Password (leave empty for Windows auth)"
+                        Text="{Binding Password}" />
 
-                <Button
-                    Margin="0,10,0,0"
-                    Command="{Binding TestConnectionCommand}"
-                    Text="Test Connection" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button
+                            Grid.Column="0"
+                            Command="{Binding TestConnectionCommand}"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Text="Test Connection" />
 
-                <Button
-                    Margin="0,10,0,0"
-                    Command="{Binding SaveSettingsCommand}"
-                    Text="Save Settings" />
-            </VerticalStackLayout>
+                        <Button
+                            Grid.Column="1"
+                            Command="{Binding SaveSettingsCommand}"
+                            FontSize="13"
+                            HeightRequest="32"
+                            Text="Save Settings" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
