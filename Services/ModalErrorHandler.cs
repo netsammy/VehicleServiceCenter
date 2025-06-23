@@ -15,6 +15,97 @@ namespace VehicleServiceCenter.Services
         {
             DisplayAlert(ex).FireAndForgetSafeAsync();
         }
+        
+        /// <summary>
+        /// Display an error message to the user.
+        /// </summary>
+        /// <param name="message">Error message to display.</param>
+        /// <returns>Task representing the asynchronous operation.</returns>
+        public async Task DisplayError(string message)
+        {
+            try
+            {
+                await _semaphore.WaitAsync();
+                
+                if (OperatingSystem.IsWindows())
+                {
+                    await AppShell.DisplaySnackbarAsync(message);
+                    return;
+                }
+
+#if ANDROID || IOS || MACCATALYST
+                if (Shell.Current is Shell shell)
+                {
+                    await shell.DisplayAlert("Error", message, "OK");
+                }
+#endif
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
+        /// <summary>
+        /// Display a message to the user with a custom title.
+        /// </summary>
+        /// <param name="message">Message to display.</param>
+        /// <param name="title">Title of the message.</param>
+        /// <returns>Task representing the asynchronous operation.</returns>
+        public async Task DisplayMessage(string message, string title)
+        {
+            try
+            {
+                await _semaphore.WaitAsync();
+                
+                if (OperatingSystem.IsWindows())
+                {
+                    await AppShell.DisplaySnackbarAsync(message);
+                    return;
+                }
+
+#if ANDROID || IOS || MACCATALYST
+                if (Shell.Current is Shell shell)
+                {
+                    await shell.DisplayAlert(title, message, "OK");
+                }
+#endif
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        /// <summary>
+        /// Display a success message to the user.
+        /// </summary>
+        /// <param name="message">Success message to display.</param>
+        /// <returns>Task representing the asynchronous operation.</returns>
+        public async Task DisplaySuccess(string message)
+        {
+            try
+            {
+                await _semaphore.WaitAsync();
+                
+                if (OperatingSystem.IsWindows())
+                {
+                    await AppShell.DisplaySnackbarAsync(message);
+                    return;
+                }
+
+#if ANDROID || IOS || MACCATALYST
+                if (Shell.Current is Shell shell)
+                {
+                    await shell.DisplayAlert("Success", message, "OK");
+                }
+#endif
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
 
         async Task DisplayAlert(Exception ex)
         {
@@ -22,18 +113,18 @@ namespace VehicleServiceCenter.Services
             {
                 await _semaphore.WaitAsync();
                 
-                // Use AppShell's toast/snackbar for Windows
                 if (OperatingSystem.IsWindows())
                 {
                     await AppShell.DisplaySnackbarAsync(ex.Message);
                     return;
                 }
 
-                // Use Shell.DisplayAlert for other platforms
+#if ANDROID || IOS || MACCATALYST
                 if (Shell.Current is Shell shell)
                 {
                     await shell.DisplayAlert("Error", ex.Message, "OK");
                 }
+#endif
             }
             finally
             {

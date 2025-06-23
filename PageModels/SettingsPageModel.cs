@@ -80,19 +80,34 @@ public partial class SettingsPageModel : ObservableObject
         _preferences.Set(ThemePreferenceKey, CurrentTheme);
 
         await Shell.Current.DisplayAlert("Success", "Settings saved successfully", "OK");
-    }
-
-    [RelayCommand]
+    }    [RelayCommand]
     private async Task TestConnection()
     {
         try
         {
             var connStr = GetConnectionString();
-            await Shell.Current.DisplayAlert("Connection String", connStr, "OK");
             
             using var connection = new SqlConnection(connStr);
             await connection.OpenAsync();
-            await Shell.Current.DisplayAlert("Success", "Connection test successful", "OK");
+            
+            // Check if Users table exists, if not create it
+            bool tableExists = await CheckIfTableExistsAsync(connection, "Users");
+            if (!tableExists)
+            {
+                bool created = await CreateUsersTableAsync(connection);
+                if (created)
+                {
+                    await Shell.Current.DisplayAlert("Success", "Connection test successful and Users table created", "OK");
+                }
+                else
+                {
+                    await Shell.Current.DisplayAlert("Success", "Connection test successful but failed to create Users table", "OK");
+                }
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Success", "Connection test successful", "OK");
+            }
         }
         catch (SqlException ex)
         {
@@ -103,6 +118,118 @@ public partial class SettingsPageModel : ObservableObject
         {
             await Shell.Current.DisplayAlert("Error", $"Connection test failed: {ex.GetType().Name} - {ex.Message}", "OK");
         }
+    }
+      private async Task<bool> CheckIfTableExistsAsync(SqlConnection connection, string tableName)
+    {
+        string query = @"
+            SELECT COUNT(1) 
+            FROM INFORMATION_SCHEMA.TABLES 
+            WHERE TABLE_NAME = @TableName";
+            
+        using var command = new SqlCommand(query, connection);
+        command.Parameters.AddWithValue("@TableName", tableName);
+        
+        var result = await command.ExecuteScalarAsync();
+        int count = result != null ? Convert.ToInt32(result) : 0;
+        return count > 0;
+    }
+    
+    private async Task<bool> CreateUsersTableAsync(SqlConnection connection)
+    {
+        try
+        {
+            string query = @"
+                CREATE TABLE Users (
+                    Id INT IDENTITY(1,1) PRIMARY KEY,
+                    Username NVARCHAR(50) NOT NULL UNIQUE,
+                    PasswordHash NVARCHAR(100) NOT NULL,
+                    CreatedDate DATETIME DEFAULT GETDATE()
+                )";
+                
+            using var command = new SqlCommand(query, connection);
+            await command.ExecuteNonQueryAsync();
+            
+            // Add default admin user
+            string adminQuery = @"
+                INSERT INTO Users (Username, PasswordHash)
+                VALUES ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918')";
+                
+            using var adminCommand = new SqlCommand(adminQuery, connection);
+            await adminCommand.ExecuteNonQueryAsync();
+            
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task CreateAdminUser()
+    {
+        try
+        {
+            // First, test the connection
+            var connStr = GetConnectionString();
+            
+            using var connection = new SqlConnection(connStr);
+            await connection.OpenAsync();
+            
+            // Check if Users table exists, if not create it
+            bool tableExists = await CheckIfTableExistsAsync(connection, "Users");
+            if (!tableExists)
+            {
+                bool created = await CreateUsersTableAsync(connection);
+                if (!created)
+                {
+                    await Shell.Current.DisplayAlert("Error", "Failed to create Users table", "OK");
+                    return;
+                }
+            }
+            
+            // Check if admin user exists
+            bool adminExists = await CheckIfUserExistsAsync(connection, "admin");
+            if (adminExists)
+            {
+                await Shell.Current.DisplayAlert("Info", "Admin user already exists", "OK");
+                return;
+            }
+            
+            // Create admin user
+            string adminQuery = @"
+                INSERT INTO Users (Username, PasswordHash)
+                VALUES ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918')";
+                
+            using var adminCommand = new SqlCommand(adminQuery, connection);
+            await adminCommand.ExecuteNonQueryAsync();
+            
+            await Shell.Current.DisplayAlert("Success", "Admin user created successfully. Username: admin, Password: password", "OK");
+        }
+        catch (SqlException ex)
+        {
+            var details = $"Error Number: {ex.Number}\nMessage: {ex.Message}\nServer: {ex.Server}";
+            await Shell.Current.DisplayAlert("SQL Error", details, "OK");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Failed to create admin user: {ex.GetType().Name} - {ex.Message}", "OK");
+        }
+    }
+    
+    private async Task<bool> CheckIfUserExistsAsync(SqlConnection connection, string username)
+    {
+        string query = @"
+            SELECT COUNT(1) 
+            FROM Users 
+            WHERE LOWER(Username) = LOWER(@Username)";
+            
+        using var command = new SqlCommand(query, connection);
+        command.Parameters.AddWithValue("@Username", username);
+        
+        var result = await command.ExecuteScalarAsync();
+        int count = result != null ? Convert.ToInt32(result) : 0;
+        return count > 0;
     }
 
     public static string GetConnectionString()

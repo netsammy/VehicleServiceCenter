@@ -1,6 +1,9 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls;
+using VehicleServiceCenter.Pages;
+using VehicleServiceCenter.Services;
 using Font = Microsoft.Maui.Font;
 
 namespace VehicleServiceCenter
@@ -62,6 +65,34 @@ namespace VehicleServiceCenter
         private void SfSegmentedControl_SelectionChanged(object sender, Syncfusion.Maui.Toolkit.SegmentedControl.SelectionChangedEventArgs e)
         {
             Application.Current!.UserAppTheme = e.NewIndex == 0 ? AppTheme.Dark : AppTheme.Light;
+        }
+          public async Task Logout()
+        {
+            var authService = App.ServiceProvider.GetRequiredService<IAuthService>();
+            await authService.LogoutAsync();
+            
+            // Navigate to login page
+            if (Application.Current?.Windows.Count > 0)
+            {
+                var loginPage = App.ServiceProvider.GetRequiredService<LoginPage>();
+                Application.Current.Windows[0].Page = new NavigationPage(loginPage);
+            }
+            
+            await DisplayToastAsync("You have been logged out");
+        }
+
+        private async void LogoutButton_Clicked(object sender, EventArgs e)
+        {
+            // Ask for confirmation before logging out
+            bool confirmed = await Shell.Current.DisplayAlert(
+                "Confirm Logout", 
+                "Are you sure you want to log out?", 
+                "Yes", "No");
+            
+            if (confirmed)
+            {
+                await Logout();
+            }
         }
     }
 }

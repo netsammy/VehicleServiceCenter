@@ -118,12 +118,19 @@
         Glyph="{x:Static f:FluentUI.add_32_regular}"
         Size="{StaticResource IconSize}"
         Color="{AppThemeBinding Light={StaticResource White},
-                                Dark={StaticResource LightOnDarkBackground}}" />
-
+                                Dark={StaticResource LightOnDarkBackground}}" />    
     <FontImageSource
         x:Key="IconDelete"
         FontFamily="{x:Static f:FluentUI.FontFamily}"
         Glyph="{x:Static f:FluentUI.delete_32_regular}"
+        Size="{StaticResource IconSize}"
+        Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground},
+                                Dark={StaticResource LightOnDarkBackground}}" />
+
+    <FontImageSource
+        x:Key="IconPeople"
+        FontFamily="{x:Static f:FluentUI.FontFamily}"
+        Glyph="{x:Static f:FluentUI.person_32_regular}"
         Size="{StaticResource IconSize}"
         Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground},
                                 Dark={StaticResource LightOnDarkBackground}}" />
@@ -307,12 +314,10 @@
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
         <Setter Property="HintLabelStyle" Value="{AppThemeBinding Light={StaticResource lightThemeLabelStyle}, Dark={StaticResource darkThemeLabelStyle}}" />
     </Style>
-
-
     <Style x:Key="ShimmerCustomViewStyle" TargetType="BoxView">
         <Setter Property="BackgroundColor" Value="Gray" />
-        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
-        <Setter Property="VerticalOptions" Value="CenterAndExpand" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 
     <Style TargetType="pullToRefresh:SfPullToRefresh">

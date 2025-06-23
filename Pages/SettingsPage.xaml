@@ -98,9 +98,7 @@
                         Text="Number of latest records to display on first load (0 = show all records)"
                         TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
                 </VerticalStackLayout>
-            </Border>
-
-            <!--  Database Settings  -->
+            </Border>            <!--  Database Settings  -->
             <Border
                 Padding="10"
                 StrokeShape="RoundRectangle 8"
@@ -109,7 +107,12 @@
                     <Label
                         FontAttributes="Bold"
                         FontSize="14"
-                        Text="Database Settings" />
+                        Text="Database Settings (User Authentication)" />
+                        
+                    <Label
+                        FontSize="12"
+                        Text="These SQL Server settings are used for user authentication and management."
+                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
 
                     <Entry
                         x:Name="ServerEntry"
@@ -138,9 +141,7 @@
                         HeightRequest="32"
                         IsPassword="True"
                         Placeholder="Password (leave empty for Windows auth)"
-                        Text="{Binding Password}" />
-
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        Text="{Binding Password}" />                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                         <Button
                             Grid.Column="0"
                             Command="{Binding TestConnectionCommand}"
@@ -155,6 +156,19 @@
                             HeightRequest="32"
                             Text="Save Settings" />
                     </Grid>
+                    
+                    <Button
+                        Command="{Binding CreateAdminUserCommand}"
+                        FontSize="13"
+                        HeightRequest="32"
+                        Text="Create Admin User"
+                        BackgroundColor="{StaticResource Tertiary}" 
+                        TextColor="{StaticResource White}" />
+                    
+                    <Label
+                        FontSize="12"
+                        Text="This will create an admin user (username: admin, password: password) if one doesn't exist"
+                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>

@@ -1,8 +1,6 @@
-﻿// filepath: d:\abdus projects\MAUI\2025\VehicleServiceCenter\VehicleServiceCenter\MauiProgram.cs
+// filepath: d:\abdus projects\MAUI\2025\VehicleServiceCenter\VehicleServiceCenter\MauiProgram.cs
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Hosting;
-using Microsoft.Maui.LifecycleEvents;
 using Syncfusion.Maui.Toolkit.Hosting;
 using VehicleServiceCenter.Data;
 using VehicleServiceCenter.PageModels;
@@ -13,6 +11,7 @@ using VehicleServiceCenter.Utilities;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Windows.Graphics;
+using Microsoft.Maui.LifecycleEvents;
 #endif
 
 namespace VehicleServiceCenter
@@ -37,7 +36,8 @@ namespace VehicleServiceCenter
             
             // Configure Syncfusion Toolkit
             builder.ConfigureSyncfusionToolkit();
-              // Configure MAUI handlers
+            
+            // Configure MAUI handlers
             builder.ConfigureMauiHandlers(handlers =>
             {
 #if IOS || MACCATALYST
@@ -45,10 +45,10 @@ namespace VehicleServiceCenter
 #endif
             });
             
-#if WINDOWS
-            // Configure Windows-specific settings
+            // Configure lifecycle events
             builder.ConfigureLifecycleEvents(events =>
             {
+#if WINDOWS
                 events.AddWindows(windows => windows
                     .OnWindowCreated((window) => 
                     {
@@ -58,8 +58,8 @@ namespace VehicleServiceCenter
                         var appWindow = AppWindow.GetFromWindowId(id);
                         appWindow.Title = AppInfo.Name;
                     }));
-            });
 #endif
+            });
             
             // Configure fonts
             builder.ConfigureFonts(fonts =>

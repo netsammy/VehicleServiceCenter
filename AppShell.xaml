@@ -52,27 +52,32 @@
         </DataTemplate>
     </Shell.ItemTemplate>
 
-    <FlyoutItem FlyoutDisplayOptions="AsMultipleItems">
-        <ShellContent
+    <FlyoutItem FlyoutDisplayOptions="AsMultipleItems">        <ShellContent
             Title="Service Records"
             ContentTemplate="{DataTemplate pages:ServiceRecordListPage}"
             Icon="{StaticResource IconProjects}"
             Route="services" />
 
         <ShellContent
+            Title="User Management"
+            ContentTemplate="{DataTemplate pages:UserManagementPage}"
+            Icon="{StaticResource IconPeople}"
+            Route="users" />
+
+        <ShellContent
             Title="Settings"
             ContentTemplate="{DataTemplate pages:SettingsPage}"
             Icon="{StaticResource IconMeta}"
             Route="settings" />
-    </FlyoutItem>
-
-    <Shell.FlyoutFooter>
-        <Grid Padding="15">
+    </FlyoutItem>    <Shell.FlyoutFooter>
+        <Grid Padding="15" RowDefinitions="Auto,Auto">
             <sf:SfSegmentedControl
+                Grid.Row="0"
                 x:Name="ThemeSegmentedControl"
                 Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
                 CornerRadius="8"
                 HorizontalOptions="Center"
+                Margin="0,0,0,15"
                 SegmentHeight="40"
                 SegmentWidth="40"
                 SelectionChanged="SfSegmentedControl_SelectionChanged"
@@ -86,6 +91,15 @@
                     </x:Array>
                 </sf:SfSegmentedControl.ItemsSource>
             </sf:SfSegmentedControl>
+              <Button
+                Grid.Row="1"
+                Text="Logout"
+                Clicked="LogoutButton_Clicked"
+                ImageSource="{StaticResource IconDelete}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Error}, Dark={StaticResource Error}}"
+                TextColor="{StaticResource White}"
+                HorizontalOptions="Fill"
+                CornerRadius="8" />
         </Grid>
     </Shell.FlyoutFooter>
 
